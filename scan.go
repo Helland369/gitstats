@@ -1,10 +1,9 @@
-package scan
+package main
 
 import (
 	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
@@ -38,7 +37,7 @@ func scan_git_directories(dirs []string, dir string) []string {
 			if file.Name() == "vendor" || file.Name() == "node_modules" {
 				continue
 			}
-			dirs = scan_git_directories(dirs, dir)
+			dirs = scan_git_directories(dirs, path)
 		}
 	}
 
@@ -59,7 +58,7 @@ func get_dot_file_path() string {
 }
 
 func open_file(filePath string) *os.File {
-	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY, 0755)
+	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_RDWR, 0755)
 	if err != nil {
 		if os.IsNotExist(err) {
 			// file does not exist
@@ -111,7 +110,7 @@ func join_slices(new []string, existing []string) []string {
 
 func dump_string_slice_to_file(repos []string, filePath string) {
 	content := strings.Join(repos, "\n")
-	ioutil.WriteFile(filePath, []byte(content), 0755)
+	os.WriteFile(filePath, []byte(content), 0755)
 }
 
 func add_new_slice_elements_to_file(filePath string, newRepos []string) {
@@ -122,7 +121,7 @@ func add_new_slice_elements_to_file(filePath string, newRepos []string) {
 
 // scan a new directory for a Git repository
 func scan(dir string) {
-	fmt.Printf("Found folders:\n\n")
+	fmt.Printf("Found Directories:\n\n")
 	repositories := recursive_scan_directories(dir)
 	filepath := get_dot_file_path()
 	add_new_slice_elements_to_file(filepath, repositories)
