@@ -1,5 +1,5 @@
 module github.com/Helland369/gitstats
-
+                                  
 go 1.25.5
 
 require github.com/go-git/go-git/v5 v5.16.4

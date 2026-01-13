@@ -1,6 +1,9 @@
 package main
 
-import "flag"
+import (
+	"flag"
+	"github.com/Helland369/gitstats/git_stats"
+)
 
 func main() {
 	var folder string
@@ -10,8 +13,8 @@ func main() {
 	flag.Parse()
 
 	if folder != "" {
-		scan(folder)
+		git_stats.Scan(folder)
 		return
 	}
-	stats(email)
+	git_stats.Stats(email)
 }

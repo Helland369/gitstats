@@ -1,4 +1,4 @@
-package main
+package git_stats
 
 import (
 	"bufio"
@@ -120,7 +120,7 @@ func add_new_slice_elements_to_file(filePath string, newRepos []string) {
 }
 
 // scan a new directory for a Git repository
-func scan(dir string) {
+func Scan(dir string) {
 	fmt.Printf("Found Directories:\n\n")
 	repositories := recursive_scan_directories(dir)
 	filepath := get_dot_file_path()

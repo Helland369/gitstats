@@ -1,4 +1,4 @@
-package main
+package git_stats
 
 import (
 	"fmt"
@@ -220,7 +220,7 @@ func process_repositories(email string) map[int]int {
 	return commits
 }
 
-func stats(email string) {
+func Stats(email string) {
 	commits := process_repositories(email)
 	print_commit_stats(commits)
 }
