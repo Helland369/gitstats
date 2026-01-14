@@ -67,11 +67,15 @@ func Get_github_contrib(userName string) {
 	}
 	defer req.Body.Close()
 
-	b, _ := io.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if res.StatusCode != 200 {
-		fmt.Printf("HTTP %d\n%s\n", res.StatusCode, string(b))
+		fmt.Printf("HTTP %d\n%s\n", res.StatusCode, string(body))
+		return
+	}
+	if err != nil {
+		fmt.Println("Failed to read response body: ", err)
 		return
 	}
 
-	fmt.Println(string(b))
+	fmt.Println(string(body))
 }
