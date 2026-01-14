@@ -4,7 +4,7 @@ import (
 	"flag"
 
 	"github.com/Helland369/gitstats/git_stats"
-//	"github.com/Helland369/gitstats/github_stats"
+	"github.com/Helland369/gitstats/github_stats"
 )
 
 func main() {
@@ -22,12 +22,17 @@ func main() {
 	}
 
 	// work in progress
-  // if userName != "" {
-	// 	res, err := github_stats.Get_github_contrib(userName)
-	// 	if err != nil {
-	// 		println(err)
-	// 	}
-	// }
+  if userName != "" {
+		res, err := github_stats.Github_stats(userName)
+		if err != nil {
+			println(err)
+		}
+		println(res.Data.User.ContributionsCollection.ContributionCalendar.TotalContributions)
+		for x := range len(res.Data.User.ContributionsCollection.ContributionCalendar.Weeks) {
+			println(x)
+		}
+		
+	}
 
 	git_stats.Stats(email)
 }
