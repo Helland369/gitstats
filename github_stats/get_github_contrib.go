@@ -19,7 +19,7 @@ type graphQLRequest struct {
 	Variables map[string]any `json:"variables,omitempty"`
 }
 
-func Get_github_contrib(userName string) {
+func Get_github_contrib(userName string) ([]byte, error) {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found!")
 	}
@@ -49,33 +49,40 @@ func Get_github_contrib(userName string) {
              }
            }`
 
-	requBody, _ := json.Marshal(graphQLRequest {
+	requBody, err := json.Marshal(graphQLRequest {
 		Query: query,
 		Variables: map[string]any{
 			"login": userName,
 		},
 	})
 
-	req, _ := http.NewRequest("POST", url, bytes.NewReader(requBody))
+	if err != nil {
+		return nil, err
+	}
+	
+	req, err := http.NewRequest("POST", url, bytes.NewReader(requBody))
+	if err != nil {
+		return nil, err
+	}
+	
 	req.Header.Set("Authorization", "Bearer " + token)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/vnd.github+json")
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	defer req.Body.Close()
-
+	defer res.Body.Close()
+	
 	body, err := io.ReadAll(res.Body)
-	if res.StatusCode != 200 {
-		fmt.Printf("HTTP %d\n%s\n", res.StatusCode, string(body))
-		return
-	}
 	if err != nil {
-		fmt.Println("Failed to read response body: ", err)
-		return
+		return nil, err
+	}
+	
+	if res.StatusCode != 200 {
+		return body, fmt.Errorf("HTTP %d: %s", res.StatusCode, string(body))
 	}
 
-	fmt.Println(string(body))
+	return body, nil
 }

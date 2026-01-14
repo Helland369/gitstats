@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	
+
 	"github.com/Helland369/gitstats/git_stats"
-	"github.com/Helland369/gitstats/github_stats"
+//	"github.com/Helland369/gitstats/github_stats"
 )
 
 func main() {
@@ -21,9 +21,13 @@ func main() {
 		return
 	}
 
-	if userName != "" {
-		github_stats.Get_github_contrib(userName)		
-	}
-	
+	// work in progress
+  // if userName != "" {
+	// 	res, err := github_stats.Get_github_contrib(userName)
+	// 	if err != nil {
+	// 		println(err)
+	// 	}
+	// }
+
 	git_stats.Stats(email)
 }
