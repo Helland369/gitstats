@@ -162,7 +162,7 @@ func print_cell(val int, today bool) {
 		escape = "\033[1;37;45m"
 	}
 	if val == 0 {
-		fmt.Printf(escape + "  - " + "\033[0m")
+		fmt.Print(escape + "  - " + "\033[0m")
 		return
 	}
 	str := "  %d "
@@ -224,3 +224,7 @@ func Stats(email string) {
 	commits := process_repositories(email)
 	print_commit_stats(commits)
 }
+
+// export functions
+func Calc_offset() int { return calc_offset() }
+func Count_days_since_date(t time.Time) int { return count_days_since_date(t) }
