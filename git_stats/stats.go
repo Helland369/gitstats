@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"time"
+
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
 )
@@ -228,3 +229,4 @@ func Stats(email string) {
 // export functions
 func Calc_offset() int { return calc_offset() }
 func Count_days_since_date(t time.Time) int { return count_days_since_date(t) }
+func Print_commit_stats(commits map[int]int) { print_commit_stats(commits) }

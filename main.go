@@ -22,22 +22,23 @@ func main() {
 		return
 	}
 
-	// work in progress
   if userName != "" {
 		res, err := github_stats.Github_stats(userName)
 		if err != nil {
 			println(err)
+			return
 		}
-		cal := res.Data.User.ContributionsCollection.ContributionCalendar
-		fmt.Println("Total: ", cal.TotalContributions)
-		for _, w := range cal.Weeks {
-			for _, d := range w.ContributionDays {
-				if d.ContributionCount > 0 {
-					fmt.Printf("%s (%d): %d\n", d.Date, d.Weekday, d.ContributionCount)
-				}
-			}
-		}
+		
+		commits := github_stats.To_commit_map(res)
+
+		fmt.Println("Github")
+		git_stats.Print_commit_stats(commits)
+
+		return
 	}
 
-	git_stats.Stats(email)
+	if email != "" {
+		fmt.Println("Local Git")
+		git_stats.Stats(email)
+	}
 }
