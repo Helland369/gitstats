@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 
 	"github.com/Helland369/gitstats/git_stats"
 	"github.com/Helland369/gitstats/github_stats"
@@ -27,11 +28,15 @@ func main() {
 		if err != nil {
 			println(err)
 		}
-		println(res.Data.User.ContributionsCollection.ContributionCalendar.TotalContributions)
-		for x := range len(res.Data.User.ContributionsCollection.ContributionCalendar.Weeks) {
-			println(x)
+		cal := res.Data.User.ContributionsCollection.ContributionCalendar
+		fmt.Println("Total: ", cal.TotalContributions)
+		for _, w := range cal.Weeks {
+			for _, d := range w.ContributionDays {
+				if d.ContributionCount > 0 {
+					fmt.Printf("%s (%d): %d\n", d.Date, d.Weekday, d.ContributionCount)
+				}
+			}
 		}
-		
 	}
 
 	git_stats.Stats(email)
