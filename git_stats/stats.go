@@ -120,13 +120,13 @@ func build_cols(keys []int, commits map[int]int) map[int]column {
 func print_months() {
 	week := get_begining_of_day(time.Now()).Add(-(daysInLastSixMonths * time.Hour * 24))
 	month := week.Month()
-	fmt.Printf("      ")
+	fmt.Printf("    ")
 	for {
 		if week.Month() != month {
 			fmt.Printf("%s ", week.Month().String()[:3])
 			month = week.Month()
 		} else {
-			fmt.Printf("      ")
+			fmt.Printf("    ")
 		}
 		week = week.Add(7 * time.Hour * 24)
 		if week.After(time.Now()) {
@@ -146,7 +146,7 @@ func print_days_col(day int) {
 	case 3:
 		out = " Fri "
 	}
-	fmt.Printf(out)
+	fmt.Print(out)
 }
 
 func print_cell(val int, today bool) {
