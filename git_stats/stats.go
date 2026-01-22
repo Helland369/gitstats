@@ -58,22 +58,18 @@ func calc_offset() int {
 }
 
 func fill_commits(email string, path string, commits map[int]int) map[int]int {
-	// instance of git repo object from path
 	repo, err := git.PlainOpen(path)
 	if err != nil {
 		panic(err)
 	}
-	// get the HEAD reference
 	ref, err := repo.Head()
 	if err != nil {
 		panic(err)
 	}
-	// get the commit history starting from HEAD
 	iterator, err := repo.Log(&git.LogOptions{From: ref.Hash()})
 	if err != nil {
 		panic(err)
 	}
-	// iterate the commits
 	offset := calc_offset()
 	err = iterator.ForEach(func(c *object.Commit) error {
 		daysAgo := count_days_since_date(c.Author.When) + offset
@@ -102,17 +98,17 @@ func sort_map_into_slices(m map[int]int) []int {
 
 func build_cols(keys []int, commits map[int]int) map[int]column {
 	cols := make(map[int]column)
-	col := column{}
+
 	for _, k := range keys {
-		week := int(k / 7)
-		dayinweek := k % 7
-		if dayinweek == 0 {
-			col = column{}
+		week := k / 7
+		dow := k % 7
+
+		col, ok := cols[week]
+		if !ok {
+			col = make(column, 7)
 		}
-		col = append(col, commits[k])
-		if dayinweek == 6 {
-			cols[week] = col
-		}
+		col[dow] = commits[k]
+		cols[week] = col
 	}
 	return cols
 }
@@ -136,17 +132,25 @@ func print_months() {
 	fmt.Printf("\n")
 }
 
-func print_days_col(day int) {
-	out := "   "
-	switch day {
+func print_days_col(dow int) {
+	switch dow {
+	case 0:
+	  fmt.Print(" Sun ")
 	case 1:
-		out = " Mon "
+		fmt.Print(" Mon ")
 	case 2:
-		out = " Wed "
+ 		fmt.Print(" Tue ")
 	case 3:
-		out = " Fri "
+		fmt.Print(" Wed ")
+	case 4:
+		fmt.Print(" Thu ")
+	case 5:
+		fmt.Print(" Fri ")
+	case 6:
+		fmt.Print(" Sat ")
+	default:
+		fmt.Print("     ")
 	}
-	fmt.Print(out)
 }
 
 func print_cell(val int, today bool) {
@@ -178,25 +182,20 @@ func print_cell(val int, today bool) {
 
 func print_cells(cols map[int]column) {
 	print_months()
-	for j := 6; j >= 0; j-- {
-		for i := weeksInLastSixMonths + 1; i >= 0; i-- {
-			if i == weeksInLastSixMonths + 1 {
-				print_days_col(j)
+
+	weeks := weeksInLastSixMonths + 1
+
+	for dow := range 7 {
+		print_days_col(dow)
+
+		for w := range weeks {
+			if col, ok := cols[w]; ok && len(col) > dow {
+				print_cell(col[dow], false)
+			} else {
+				print_cell(0, false)
 			}
-			if col, ok := cols[i]; ok {
-				if i == 0 && j == calc_offset() -1 {
-					print_cell(col[j], true)
-					continue
-				} else {
-					if len(col) > j {
-						print_cell(col[j], false)
-						continue
-					}
-				}
-			}
-			print_cell(0, false)
 		}
-		fmt.Printf("\n")
+		fmt.Print("\n")
 	}
 }
 
@@ -206,7 +205,6 @@ func print_commit_stats(commits map[int]int) {
 	print_cells(cols)
 }
 
-// process_repositories given a user email, returns the commits made in the last 6 months
 func process_repositories(email string) map[int]int {
 	filePath := get_dot_file_path()
 	repos := parse_file_lines_to_slice(filePath)
