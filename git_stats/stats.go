@@ -18,8 +18,24 @@ type column []int
 
 func get_begining_of_day(t time.Time) time.Time {
 	year, month, day := t.Date()
-	startOfDay := time.Date(year, month, day, 0, 0, 0, 0, t.Location())
-	return startOfDay
+	return time.Date(year, month, day, 0, 0, 0, 0, t.Location())
+}
+
+func grid_start() time.Time {
+	now := get_begining_of_day(time.Now())
+	start := now.AddDate(0, 0, -(daysInLastSixMonths - 1))
+	return start.AddDate(0, 0, -int(start.Weekday()))
+}
+
+func day_index(t time.Time) (int, bool) {
+	start := grid_start()
+	day := get_begining_of_day(t)
+
+	if day.Before(start) || day.After(get_begining_of_day(time.Now())) {
+		return 0, false
+	}
+	diff := int(day.Sub(start).Hours() / 24)
+	return diff, true
 }
 
 func count_days_since_date(date time.Time) int {
@@ -70,14 +86,12 @@ func fill_commits(email string, path string, commits map[int]int) map[int]int {
 	if err != nil {
 		panic(err)
 	}
-	offset := calc_offset()
 	err = iterator.ForEach(func(c *object.Commit) error {
-		daysAgo := count_days_since_date(c.Author.When) + offset
 		if c.Author.Email != email {
 			return nil
 		}
-		if daysAgo != outOfRange {
-			commits[daysAgo]++
+		if idx, ok := day_index(c.Author.When); ok {
+			commits[idx]++
 		}
 		return nil
 	})
@@ -208,9 +222,8 @@ func print_commit_stats(commits map[int]int) {
 func process_repositories(email string) map[int]int {
 	filePath := get_dot_file_path()
 	repos := parse_file_lines_to_slice(filePath)
-	daysInMap := daysInLastSixMonths
-	commits := make(map[int]int, daysInMap)
-	for i := daysInMap; i > 0; i-- {
+	commits := make(map[int]int, daysInLastSixMonths)
+	for i := range daysInLastSixMonths {
 		commits[i] = 0;
 	}
 	for _, path := range repos {
@@ -228,3 +241,5 @@ func Stats(email string) {
 func Calc_offset() int { return calc_offset() }
 func Count_days_since_date(t time.Time) int { return count_days_since_date(t) }
 func Print_commit_stats(commits map[int]int) { print_commit_stats(commits) }
+func Day_index(t time.Time) (int, bool) { return day_index(t) }
+
