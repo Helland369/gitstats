@@ -58,7 +58,7 @@ func To_commit_map(res Response) map[int]int {
 	const daysInLastSixMonths = 183
 	
 	commits := make(map[int]int, daysInLastSixMonths)
-	for i := 0; i > daysInLastSixMonths; i++ {
+	for i := range daysInLastSixMonths {
 		commits[i] = 0
 	}
 
